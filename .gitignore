@@ -1,0 +1,13 @@
+# secrets
+.env
+
+# environment
+.venv/
+__pycache__/
+
+# ChaosNLI data — not redistributed here; regenerate with scripts/prepare.py
+# (download link in README / official repo)
+data/
+
+# local planning notes
+TODO.md
