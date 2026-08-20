@@ -1,0 +1,360 @@
+\begin{thebibliography}{45}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Baan et~al.(2022)Baan, Aziz, Plank, and Fern{\'a}ndez}]{baan2022stop}
+Joris Baan, Wilker Aziz, Barbara Plank, and Raquel Fern{\'a}ndez. 2022.
+\newblock \href {https://aclanthology.org/2022.emnlp-main.124/} {Stop measuring
+  calibration when humans disagree}.
+\newblock In \emph{Proceedings of the 2022 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Baan et~al.(2024)Baan, Fern{\'a}ndez, Plank, and
+  Aziz}]{baan2024interpreting}
+Joris Baan, Raquel Fern{\'a}ndez, Barbara Plank, and Wilker Aziz. 2024.
+\newblock \href {https://aclanthology.org/2024.eacl-short.24/} {Interpreting
+  predictive probabilities: Model confidence or human label variation?}
+\newblock In \emph{Proceedings of the 18th Conference of the European Chapter
+  of the Association for Computational Linguistics (EACL)}.
+
+\bibitem[{Bachar et~al.(2026)Bachar, Levi, Mishra, Levi, Minhas, Miller,
+  Ben-Porat, Sheetrit, and Mordechay}]{bachar2026escalation}
+Or~Bachar, Or~Levi, Sardhendu Mishra, Adi Levi, Manpreet~Singh Minhas, Justin
+  Miller, Omer Ben-Porat, Eilon Sheetrit, and Jonathan Mordechay. 2026.
+\newblock Uncertainty-aware escalation of {LLM} decisions in production content
+  moderation.
+\newblock In \emph{Proceedings of the International Conference on Autonomous
+  Agents and Multiagent Systems (AAMAS)}.
+
+\bibitem[{Basile et~al.(2021)Basile, Fell, Fornaciari, Hovy, Paun, Plank,
+  Poesio, and Uma}]{basile2021weneed}
+Valerio Basile, Michael Fell, Tommaso Fornaciari, Dirk Hovy, Silviu Paun,
+  Barbara Plank, Massimo Poesio, and Alexandra Uma. 2021.
+\newblock \href {https://aclanthology.org/2021.bppf-1.3/} {We need to consider
+  disagreement in evaluation}.
+\newblock In \emph{Proceedings of the 1st Workshop on Benchmarking: Past,
+  Present and Future}.
+
+\bibitem[{Baumann et~al.(2025)Baumann, R{\"o}ttger, Urman, Wendsj{\"o},
+  Plaza-del Arco, Gruber, and Hovy}]{baumann2025hacking}
+Joachim Baumann, Paul R{\"o}ttger, Aleksandra Urman, Albert Wendsj{\"o},
+  Flor~Miriam Plaza-del Arco, Johannes~B. Gruber, and Dirk Hovy. 2025.
+\newblock \href {https://arxiv.org/abs/2509.08825} {Large language model
+  hacking: Quantifying the hidden risks of using {LLMs} for text annotation}.
+\newblock \emph{arXiv preprint arXiv:2509.08825}.
+
+\bibitem[{Cabitza et~al.(2023)Cabitza, Campagner, and
+  Basile}]{cabitza2023perspectivist}
+Federico Cabitza, Andrea Campagner, and Valerio Basile. 2023.
+\newblock \href {https://doi.org/10.1609/aaai.v37i6.25840} {Toward a
+  perspectivist turn in ground truthing for predictive computing}.
+\newblock \emph{Proceedings of the AAAI Conference on Artificial Intelligence},
+  37.
+
+\bibitem[{Chen et~al.(2026)Chen, Hu, Zhang, Litschko, Korhonen, and
+  Plank}]{chen2026decoupling}
+Beiduo Chen, Tianyi Hu, Chenyang Zhang, Robert Litschko, Anna Korhonen, and
+  Barbara Plank. 2026.
+\newblock \href {https://arxiv.org/abs/2601.03154} {Decoupling the effect of
+  chain-of-thought reasoning: A human label variation perspective}.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  2026}.
+
+\bibitem[{Chen et~al.(2025)Chen, Peng, Korhonen, and Plank}]{chen2025rose}
+Beiduo Chen, Siyao Peng, Anna Korhonen, and Barbara Plank. 2025.
+\newblock \href {https://arxiv.org/abs/2412.13942} {A rose by any other name:
+  {LLM}-generated explanations are good proxies for human explanations to
+  collect label distributions on {NLI}}.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL 2025}.
+
+\bibitem[{Chen et~al.(2024)Chen, Wang, Peng, Litschko, Korhonen, and
+  Plank}]{chen2024seeing}
+Beiduo Chen, Xinpeng Wang, Siyao Peng, Robert Litschko, Anna Korhonen, and
+  Barbara Plank. 2024.
+\newblock \href {https://arxiv.org/abs/2406.17600} {``{S}eeing the big through
+  the small'': Can {LLMs} approximate human judgment distributions on {NLI}
+  from a few explanations?}
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  EMNLP 2024}.
+
+\bibitem[{DeSalvo et~al.(2025)DeSalvo, Mohri, Mohri, and
+  Zhong}]{desalvo2025budgeted}
+Giulia DeSalvo, Christopher Mohri, Mehryar Mohri, and Yutao Zhong. 2025.
+\newblock \href {https://arxiv.org/abs/2510.26706} {Budgeted multiple-expert
+  deferral}.
+\newblock \emph{arXiv preprint arXiv:2510.26706}.
+
+\bibitem[{Gilardi et~al.(2023)Gilardi, Alizadeh, and
+  Kubli}]{gilardi2023chatgpt}
+Fabrizio Gilardi, Meysam Alizadeh, and Ma{\"e}l Kubli. 2023.
+\newblock \href {https://doi.org/10.1073/pnas.2305016120} {{ChatGPT}
+  outperforms crowd workers for text-annotation tasks}.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 120(30).
+
+\bibitem[{Gligori{\'c} et~al.(2025)Gligori{\'c}, Zrnic, Lee, Cand{\`e}s, and
+  Jurafsky}]{gligoric2025can}
+Kristina Gligori{\'c}, Tijana Zrnic, Cinoo Lee, Emmanuel Cand{\`e}s, and Dan
+  Jurafsky. 2025.
+\newblock \href {https://arxiv.org/abs/2408.15204} {Can unconfident {LLM}
+  annotations be used for confident conclusions?}
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics (NAACL)}.
+
+\bibitem[{Gruber et~al.(2025)Gruber, Alber, Bischl, Kauermann, Plank, and
+  A{\ss}enmacher}]{gruber2025revisiting}
+Cornelia Gruber, Helen Alber, Bernd Bischl, G{\"o}ran Kauermann, Barbara Plank,
+  and Matthias A{\ss}enmacher. 2025.
+\newblock \href {https://arxiv.org/abs/2507.02593} {Revisiting active learning
+  under (human) label variation}.
+\newblock \emph{arXiv preprint arXiv:2507.02593}.
+
+\bibitem[{Hakimi et~al.(2026)Hakimi, Hirlimann, Augenstein, and
+  Sch{\"u}tze}]{hakimi2026humans}
+Ahmad~Dawar Hakimi, Ludwig Hirlimann, Isabelle Augenstein, and Hinrich
+  Sch{\"u}tze. 2026.
+\newblock \href {https://arxiv.org/abs/2604.13899} {Do we still need humans in
+  the loop? comparing human and {LLM} annotation in active learning for
+  hostility detection}.
+\newblock \emph{arXiv preprint arXiv:2604.13899}.
+
+\bibitem[{Jang et~al.(2026)Jang, Lee, and Kim}]{jang2026instruction}
+Chaemin Jang, Dongman Lee, and Jihee Kim. 2026.
+\newblock Instruction-tuned language models cannot sample from distributions
+  they can describe.
+\newblock \emph{arXiv preprint}.
+
+\bibitem[{Kadavath et~al.(2022)Kadavath, Conerly, Askell, Henighan
+  et~al.}]{kadavath2022language}
+Saurav Kadavath, Tom Conerly, Amanda Askell, Tom Henighan, et~al. 2022.
+\newblock \href {https://arxiv.org/abs/2207.05221} {Language models (mostly)
+  know what they know}.
+\newblock \emph{arXiv preprint arXiv:2207.05221}.
+
+\bibitem[{Kim et~al.(2024)Kim, Mitra, Chen, Rahman, and Zhang}]{kim2024meganno}
+Hannah Kim, Kushan Mitra, Rafael~Li Chen, Sajjadur Rahman, and Dan Zhang. 2024.
+\newblock \href {https://aclanthology.org/2024.eacl-demo.18/} {{MEGAnno+}: A
+  human-{LLM} collaborative annotation system}.
+\newblock In \emph{Proceedings of the 18th Conference of the European Chapter
+  of the Association for Computational Linguistics: System Demonstrations}.
+
+\bibitem[{Kirk et~al.(2024)Kirk, Mediratta, Nalmpantis, Luketina, Hambro,
+  Grefenstette, and Raileanu}]{kirk2024understanding}
+Robert Kirk, Ishita Mediratta, Christoforos Nalmpantis, Jelena Luketina, Eric
+  Hambro, Edward Grefenstette, and Roberta Raileanu. 2024.
+\newblock \href {https://arxiv.org/abs/2310.06452} {Understanding the effects
+  of {RLHF} on {LLM} generalisation and diversity}.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}.
+
+\bibitem[{Klugmann et~al.(2024)Klugmann, Mahmood, Hegde, Kale, and
+  Kondermann}]{klugmann2024noneed}
+Christopher Klugmann, Rafid Mahmood, Guruprasad Hegde, Amit Kale, and Daniel
+  Kondermann. 2024.
+\newblock \href {https://arxiv.org/abs/2409.10286} {No need to sacrifice data
+  quality for quantity: Crowd-informed machine annotation at scale}.
+\newblock \emph{arXiv preprint arXiv:2409.10286}.
+
+\bibitem[{Kohli(2026)}]{kohli2026metric}
+Guneet Kohli. 2026.
+\newblock \href {https://arxiv.org/abs/2605.29797} {Metric-dependent annotation
+  saturation for learning from label distributions}.
+\newblock \emph{arXiv preprint arXiv:2605.29797}.
+
+\bibitem[{Lee et~al.(2023)Lee, An, and Thorne}]{lee2023dissenting}
+Noah Lee, Na~Min An, and James Thorne. 2023.
+\newblock \href {https://aclanthology.org/2023.emnlp-main.278/} {Can large
+  language models capture dissenting human voices?}
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Li et~al.(2023)Li, Shi, Ziems, Kan, Chen, Liu, and
+  Yang}]{li2023coannotating}
+Minzhi Li, Taiwei Shi, Caleb Ziems, Min-Yen Kan, Nancy~F. Chen, Zhengyuan Liu,
+  and Diyi Yang. 2023.
+\newblock \href {https://aclanthology.org/2023.emnlp-main.92/} {{CoAnnotating}:
+  Uncertainty-guided work allocation between human and large language models
+  for data annotation}.
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Lin et~al.(2022)Lin, Hilton, and Evans}]{lin2022teaching}
+Stephanie Lin, Jacob Hilton, and Owain Evans. 2022.
+\newblock \href {https://arxiv.org/abs/2205.14334} {Teaching models to express
+  their uncertainty in words}.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Madaan et~al.(2025)Madaan, Esiobu, Stenetorp, Plank, and
+  Hupkes}]{madaan2025lost}
+Lovish Madaan, David Esiobu, Pontus Stenetorp, Barbara Plank, and Dieuwke
+  Hupkes. 2025.
+\newblock \href {https://aclanthology.org/2025.naacl-long.466/} {Lost in
+  inference: Rediscovering the role of natural language inference for large
+  language models}.
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics (NAACL)}.
+
+\bibitem[{Madras et~al.(2018)Madras, Pitassi, and Zemel}]{madras2018predict}
+David Madras, Toniann Pitassi, and Richard Zemel. 2018.
+\newblock \href {https://arxiv.org/abs/1711.06664} {Predict responsibly:
+  Improving fairness and accuracy by learning to defer}.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+
+\bibitem[{Mehrotra et~al.(2026)Mehrotra, Visokay, and
+  Gligori{\'c}}]{mehrotra2026multi}
+Nupoor Mehrotra, Adam Visokay, and Kristina Gligori{\'c}. 2026.
+\newblock \href {https://arxiv.org/abs/2603.21404} {Multi-perspective {LLM}
+  annotations for valid analyses in subjective tasks}.
+\newblock \emph{arXiv preprint arXiv:2603.21404}.
+
+\bibitem[{Meister et~al.(2025)Meister, Guestrin, and
+  Hashimoto}]{meister2025benchmarking}
+Nicole Meister, Carlos Guestrin, and Tatsunori Hashimoto. 2025.
+\newblock \href {https://aclanthology.org/2025.naacl-long.257/} {Benchmarking
+  distributional alignment of large language models}.
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics (NAACL)}.
+
+\bibitem[{Mozannar and Sontag(2020)}]{mozannar2020consistent}
+Hussein Mozannar and David Sontag. 2020.
+\newblock \href {https://arxiv.org/abs/2006.01862} {Consistent estimators for
+  learning to defer to an expert}.
+\newblock In \emph{Proceedings of the 37th International Conference on Machine
+  Learning (ICML)}.
+
+\bibitem[{Ni et~al.(2026)Ni, Fan, Zouhar, Rooein, Hoyle, Sachan, Leippold,
+  Hovy, and Ash}]{ni2026reasoning}
+Jingwei Ni, Yu~Fan, Vil{\'e}m Zouhar, Donya Rooein, Alexander Hoyle, Mrinmaya
+  Sachan, Markus Leippold, Dirk Hovy, and Elliott Ash. 2026.
+\newblock \href {https://aclanthology.org/2026.eacl-long.3/} {Can reasoning
+  help large language models capture human annotator disagreement?}
+\newblock In \emph{Proceedings of the 18th Conference of the European Chapter
+  of the Association for Computational Linguistics (EACL)}.
+
+\bibitem[{Nie et~al.(2020)Nie, Zhou, and Bansal}]{nie2020chaosnli}
+Yixin Nie, Xiang Zhou, and Mohit Bansal. 2020.
+\newblock \href {https://aclanthology.org/2020.emnlp-main.734/} {What can we
+  learn from collective human opinions on natural language inference data?}
+\newblock In \emph{Proceedings of the 2020 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}, pages 9131--9143.
+
+\bibitem[{Pavlick and Kwiatkowski(2019)}]{pavlick2019inherent}
+Ellie Pavlick and Tom Kwiatkowski. 2019.
+\newblock \href {https://aclanthology.org/Q19-1043/} {Inherent disagreements in
+  human textual inferences}.
+\newblock \emph{Transactions of the Association for Computational Linguistics},
+  7:677--694.
+
+\bibitem[{Peale et~al.(2026)Peale, Devic, Gopalan, Wieder, and
+  Gollakota}]{peale2026flexible}
+Charlotte Peale, Siddartha Devic, Parikshit Gopalan, Udi Wieder, and Aravind
+  Gollakota. 2026.
+\newblock \href {https://arxiv.org/abs/2605.07805} {Flexible routing via
+  uncertainty decomposition}.
+\newblock \emph{arXiv preprint arXiv:2605.07805}.
+
+\bibitem[{Plank(2022)}]{plank2022problem}
+Barbara Plank. 2022.
+\newblock \href {https://aclanthology.org/2022.emnlp-main.731/} {The
+  ``problem'' of human label variation: On ground truth in data, modeling and
+  evaluation}.
+\newblock In \emph{Proceedings of the 2022 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{Reiss(2023)}]{reiss2023testing}
+Michael~V. Reiss. 2023.
+\newblock \href {https://arxiv.org/abs/2304.11085} {Testing the reliability of
+  {ChatGPT} for text annotation and classification: A cautionary remark}.
+\newblock \emph{arXiv preprint arXiv:2304.11085}.
+
+\bibitem[{Schroeder et~al.(2025)Schroeder, Roy, and
+  Kabbara}]{schroeder2025anchoring}
+Hope Schroeder, Deb Roy, and Jad Kabbara. 2025.
+\newblock {LLM}-assisted annotation can bias human judgments: Anchoring effects
+  in human-{LLM} collaborative labeling.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL 2025}.
+
+\bibitem[{Tian et~al.(2023)Tian, Mitchell, Zhou, Sharma, Rafailov, Yao, Finn,
+  and Manning}]{tian2023just}
+Katherine Tian, Eric Mitchell, Allan Zhou, Archit Sharma, Rafael Rafailov,
+  Huaxiu Yao, Chelsea Finn, and Christopher~D. Manning. 2023.
+\newblock \href {https://aclanthology.org/2023.emnlp-main.330/} {Just ask for
+  calibration: Strategies for eliciting calibrated confidence scores from
+  language models fine-tuned with human feedback}.
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in
+  Natural Language Processing (EMNLP)}.
+
+\bibitem[{T{\"o}rnberg(2023)}]{tornberg2023chatgpt}
+Petter T{\"o}rnberg. 2023.
+\newblock \href {https://arxiv.org/abs/2304.06588} {{ChatGPT}-4 outperforms
+  experts and crowd workers in annotating political {Twitter} messages with
+  zero-shot learning}.
+\newblock \emph{arXiv preprint arXiv:2304.06588}.
+
+\bibitem[{Uma et~al.(2021)Uma, Fornaciari, Hovy, Paun, Plank, and
+  Poesio}]{uma2021learning}
+Alexandra~N. Uma, Tommaso Fornaciari, Dirk Hovy, Silviu Paun, Barbara Plank,
+  and Massimo Poesio. 2021.
+\newblock \href {https://doi.org/10.1613/jair.1.12752} {Learning from
+  disagreement: A survey}.
+\newblock \emph{Journal of Artificial Intelligence Research}, 72:1385--1470.
+
+\bibitem[{Wang et~al.(2024)Wang, Ma, Hu, Weber-Genzel, R{\"o}ttger, Kreuter,
+  Hovy, and Plank}]{wang2024myanswer}
+Xinpeng Wang, Bolei Ma, Chengzhi Hu, Leon Weber-Genzel, Paul R{\"o}ttger,
+  Frauke Kreuter, Dirk Hovy, and Barbara Plank. 2024.
+\newblock \href {https://aclanthology.org/2024.findings-acl.441/} {``{M}y
+  answer is {C}'': First-token probabilities do not match text answers in
+  instruction-tuned language models}.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL 2024}.
+
+\bibitem[{Weber-Genzel et~al.(2024)Weber-Genzel, Peng, de~Marneffe, and
+  Plank}]{webergenzel2024varierr}
+Leon Weber-Genzel, Siyao Peng, Marie-Catherine de~Marneffe, and Barbara Plank.
+  2024.
+\newblock \href {https://aclanthology.org/2024.acl-long.123/} {{VariErr} {NLI}:
+  Separating annotation error from human label variation}.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association
+  for Computational Linguistics (ACL)}.
+
+\bibitem[{Wu et~al.(2026)Wu, Wang, Ong, Liang, and Picard}]{wu2026shala}
+Jiahao Wu, Alice Wang, Kenneth Ong, Paul~Pu Liang, and Rosalind Picard. 2026.
+\newblock \href {https://arxiv.org/abs/2606.05376} {{SHALA-LLM}: Smartly
+  handling ambiguous labels in aligning {LLMs}}.
+\newblock \emph{arXiv preprint arXiv:2606.05376}.
+
+\bibitem[{Xiong et~al.(2024)Xiong, Hu, Lu, Li, Fu, He, and Hooi}]{xiong2024can}
+Miao Xiong, Zhiyuan Hu, Xinyang Lu, Yifei Li, Jie Fu, Junxian He, and Bryan
+  Hooi. 2024.
+\newblock \href {https://arxiv.org/abs/2306.13063} {Can {LLMs} express their
+  uncertainty? an empirical evaluation of confidence elicitation in {LLMs}}.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}.
+
+\bibitem[{Zeng et~al.(2026)Zeng, Huang, Qu, Huang, Jing, and
+  Wei}]{zeng2026hypac}
+Hao Zeng, Huipeng Huang, Xinhao Qu, Jianguo Huang, Bingyi Jing, and Hongxin
+  Wei. 2026.
+\newblock \href {https://arxiv.org/abs/2602.02550} {{HyPAC}: Cost-efficient
+  {LLMs}-human hybrid annotation with {PAC} error guarantees}.
+\newblock \emph{arXiv preprint arXiv:2602.02550}.
+
+\bibitem[{Zhang et~al.(2025)Zhang, Yu, Chong, Sicilia, Tomz, Manning, and
+  Shi}]{zhang2025verbalized}
+Jiayi Zhang, Simon Yu, Derek Chong, Anthony Sicilia, Michael~R. Tomz,
+  Christopher~D. Manning, and Weiyan Shi. 2025.
+\newblock \href {https://arxiv.org/abs/2510.01171} {Verbalized sampling: How to
+  mitigate mode collapse and unlock {LLM} diversity}.
+\newblock \emph{arXiv preprint arXiv:2510.01171}.
+
+\bibitem[{Zhou et~al.(2022)Zhou, Nie, and Bansal}]{zhou2022distributed}
+Xiang Zhou, Yixin Nie, and Mohit Bansal. 2022.
+\newblock \href {https://aclanthology.org/2022.findings-acl.79/} {Distributed
+  {NLI}: Learning to predict human opinion distributions for language
+  reasoning}.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL 2022}.
+
+\end{thebibliography}
