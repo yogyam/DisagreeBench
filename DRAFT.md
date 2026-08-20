@@ -1,6 +1,6 @@
 # Where LLM Annotation Substitutes for Human Labelers — and Where It Doesn't
 
-**Draft v0.1 — 2026-08-05.** Yogya Mehrotra.
+**Draft v0.2 — 2026-08-19.** Yogya Mehrotra.
 Code, data pipeline, and figures: this repository.
 
 ## Abstract
@@ -26,10 +26,20 @@ usefully routable signal; enabling reasoning does not change this. The
 contrast is stark: the human pool's inter-annotator agreement is
 Krippendorff's α = 0.37; the model's agreement with itself is α = 0.90. Yet
 when asked to *estimate* the annotator distribution directly, the same model
-produces distributions 3× closer to the human ones (JSD 0.08) whose entropy
-does clear the routing threshold (ρ = 0.354). The model's behavioral
+produces distributions 3× closer to the human ones (JSD 0.07, full set) whose
+entropy does clear the routing threshold (ρ = 0.393). The model's behavioral
 uncertainty carries no information about human disagreement — but its
-declarative estimate of human disagreement does.
+declarative estimate of human disagreement does. Finally, we run the
+budget-allocation experiment this signal enables: a simulated router that
+sends the top-scoring items to k human annotators and keeps the model's
+distribution for the rest. Against the realistic baseline (model
+self-consistency distributions), routing on verbalized entropy captures 37% of
+an expected-gain oracle's achievable improvement, and random allocation needs
+~1.5× the annotation budget to match it. Against the strongest baseline (the
+model's own verbalized distributions), the same signal is *worse than random*:
+the model's residual errors hide in items it is confidently wrong about.
+Model-reported uncertainty tells you where the task is hard — not where the
+model is wrong.
 
 ## 1. Motivation
 
@@ -73,10 +83,31 @@ labels, so every sample parses; extended thinking is disabled. The empirical
 distribution over the 10 sampled labels is the model's label distribution.
 Of 31,130 requests, 31,127 returned usable labels (3 errors).
 
-**Verbalized arm.** As a comparison elicitation (pilot subset, n = 200, one
-request per item), the model is asked to estimate how 100 careful annotators
+**Verbalized arm.** As a comparison elicitation (one request per item, full
+3,113-item set), the model is asked to estimate how 100 careful annotators
 would distribute over the three labels, output as integer percentages under
 the same schema constraint.
+
+**Router simulation.** Each item's 100 annotations are split 50/50: one half
+defines the ground-truth distribution, the other is the finite pool routed
+items draw from (so the router can never "buy" the evaluation target, and
+even perfect routing pays annotator-sampling noise). A router scores all
+items, sends the top fraction f to humans — receiving k annotations drawn
+without replacement from the pool — and keeps the model's distribution for
+the rest. We sweep f from 0 to 1 and k ∈ {1, 3, 5, 10, 20, 50}, with 20
+replicate splits. Strategies: random; self-consistency entropy; verbalized
+entropy; channel disagreement (JSD between the sampled and verbalized
+distributions); an *entropy oracle* scoring by true human entropy; and two
+regret oracles scoring by each item's actual improvement from routing —
+*expected gain* (Monte-Carlo mean over 200 redraws; the fair upper bound,
+since it knows which items benefit but not the luck of the draw) and
+*realized gain* (a skyline that peeks at the draw). Headline numbers: AUC of
+the budget–JSD curve, normalized as the share of the expected-gain oracle's
+improvement over random ("capture"); and budget-to-match, the multiple of
+annotations random allocation needs to reach a strategy's JSD at a given
+budget. Item-level bootstrap (1,000 resamples) gives CIs on strategy–random
+gaps. Everything is repeated with total variation distance in place of JSD
+and with a bootstrap-resampling split protocol in place of the 50/50 split.
 
 **Metrics.** Primary: per-item Jensen–Shannon divergence (base 2) between the
 model and human label distributions, averaged per entropy quintile. Reported
@@ -121,9 +152,11 @@ is ρ = 0.164 [95% CI 0.131, 0.196] (p ≈ 4e-20). The correlation is reliably
 nonzero — the model is not blind to difficulty — but the CI excludes by a wide
 margin any threshold (≥ ~0.3) at which uncertainty-based routing would
 meaningfully beat random allocation. An ablation with adaptive thinking
-enabled (§5) leaves the picture unchanged. Following the pre-registered logic
-of the study design, we therefore do not proceed to the router simulation:
-**the router's input signal does not exist.**
+enabled (§5) leaves the picture unchanged. By the pre-registered logic of the
+study design, self-consistency entropy is disqualified as a router input:
+**this routing signal does not exist** (§4.5 confirms end-to-end that routing
+on it is no better than random). The signal that does exist comes from a
+different channel entirely (§4.3).
 
 ### 4.3 Verbalized confidence: the model can report disagreement it does not enact
 
@@ -133,15 +166,20 @@ model behaves entirely differently:
 
 | Signal | Mean JSD vs. human | Mean entropy (bits) | Gate ρ vs. human entropy |
 |---|---|---|---|
-| Sampled (10× self-consistency) | 0.224 | 0.089 | 0.124 (n.s.) |
-| Verbalized (est. of 100 annotators) | **0.081** | **0.853** | **0.354** (p ≈ 3e-7) |
-| Human pool | — | 0.943 | — |
+| Sampled (10× self-consistency) | 0.224 | 0.089 | 0.164 |
+| Verbalized (est. of 100 annotators) | **0.072** | **0.863** | **0.393** (p ≈ 1e-113) |
+| Human pool | — | 0.939 | — |
 
-(Pilot subset, n = 200.) Verbalized distributions are ~3× closer to the human
+(Full set, n = 3,113.) Verbalized distributions are ~3× closer to the human
 distribution than sampled ones, their average entropy nearly matches the human
 pool's, and verbalized entropy clears the pre-registered routing threshold
-(ρ = 0.354 ≥ 0.3). Strikingly, the two uncertainty signals are uncorrelated
-with each other (ρ = 0.028): they measure different quantities. Together with
+(ρ = 0.393 ≥ 0.3; pilot estimate was 0.354). Where sampled JSD degrades 4.2×
+from the lowest- to highest-entropy quintile (§4.1), verbalized JSD is nearly
+flat: 0.044 → 0.103. The declarative estimate stays accurate on precisely the
+contested items where the behavioral distribution collapses. Strikingly, the
+two uncertainty signals are essentially uncorrelated with each other
+(ρ = 0.03–0.08, depending on which sampled run is paired): they measure
+different quantities. Together with
 §4.2, this yields the paper's sharpest formulation: **the model's *behavioral*
 uncertainty carries no information about human disagreement, but its
 *declarative* estimate of human disagreement does.** This inverts a common
@@ -168,7 +206,55 @@ model were reproducing memorized gold labels, the pattern would invert on
 high-entropy items, where the original gold is essentially arbitrary. It does
 not (figure: `figures/contamination_examples.png`).
 
-## 5. Limitations
+### 4.5 The router: uncertainty finds hard items, not model errors
+
+The simulation (method in §3) asks the operational question directly: given a
+fixed annotation budget, does routing on model-reported uncertainty beat
+spending the same budget at random? The answer splits cleanly by what the
+unrouted items fall back to.
+
+**Against the sampled base** — the realistic setting where un-routed items
+keep the model's self-consistency distribution — verbalized-entropy routing
+works (figure: `figures/router_sampled_examples.png`). At k = 10 annotations
+per routed item it captures **37.4%** of the expected-gain oracle's
+improvement over random; channel disagreement (JSD between the model's two
+distributions, using no human information) captures **45.5%**, statistically
+indistinguishable from the *true-human-entropy* oracle (47.7%). In budget
+terms, random allocation needs **1.44–1.57×** as many annotations to match
+verbalized-entropy routing at 10–30% coverage (strategy–random gap CIs
+exclude zero at every budget above 5%). Self-consistency entropy captures
+nothing (−8.3%), closing the loop on §4.2 with an end-to-end null.
+
+**Against the verbalized base** — where un-routed items keep the model's
+verbalized distribution, the stronger baseline §4.3 establishes — the same
+signal *inverts* (figure: `figures/router_verb_examples.png`): verbalized
+entropy is reliably worse than random (capture −18.7%; random matches it with
+0.5–0.6× the budget). The mechanism is anti-selection. High verbalized
+entropy flags items where humans genuinely disagree — but §4.3 showed the
+verbalized distribution is already accurate exactly there. The residual
+errors sit in low-entropy items the model is confidently wrong about, which
+entropy routing systematically deprioritizes (per-item verbalized entropy vs.
+verbalized error: ρ ≈ −0.07). Even the true-human-entropy oracle barely beats
+random here (11.9%), while the expected-gain oracle still improves
+substantially — the errors are findable in principle, just not by any
+entropy-shaped signal. **Model-reported uncertainty tells you where the task
+is hard, not where the model is wrong**; it routes usefully only when the
+fallback annotator is weak.
+
+**Breadth vs. depth.** Sweeping k (figures:
+`figures/router_ksweep_{sampled,verb}_examples.png`) shows that at a fixed
+total budget, shallow-and-broad beats deep-and-narrow on the sampled base
+(k = 3–5 dominates k = 20–50), and yields the study's most quotable number on
+the verbalized base: replacing the model's verbalized distribution with the
+empirical distribution of k human labels only breaks even at **k ≈ 5**
+(k = 1: JSD 0.270; k = 3: 0.113; k = 5: 0.072; model verbalized: 0.076). In
+distributional terms, one model call is worth roughly five human annotations
+on this dataset — with the memorization caveat of §4.3 attached.
+
+All orderings and magnitudes are stable under total variation distance in
+place of JSD and under the bootstrap split protocol (capture 37.7–38.9%
+verbalized, 44.0–46.8% channel disagreement on the sampled base;
+anti-selection persists on the verbalized base in every variant).
 
 - **Elicitation is not the explanation (ablated).** Because thinking was
   disabled and output schema-constrained in the main run, we replicated the
@@ -190,6 +276,14 @@ not (figure: `figures/contamination_examples.png`).
 - **10 samples bound measurable entropy.** With 10 draws the minimum nonzero
   entropy is ~0.47 bits, coarsening the model-entropy scale. This attenuates
   the gate correlation somewhat; it cannot explain 85% exact determinism.
+- **The router is a simulation, not a deployment.** Routed items draw
+  annotations from ChaosNLI's own pool, so annotators are exchangeable with
+  the evaluation target by construction; a real deployment adds annotator
+  drift, and its ground truth would not be a held-out half of 100 labels. The
+  memorization caveat (§4.3) also propagates: if verbalized distributions are
+  partly recalled, both the verbalized base and the routing signal are
+  optimistic. The sampled-base conclusions are less exposed, since the
+  sampled distributions show no memorization signature (§4.4).
 - **Prompt sensitivity: conclusions stable, but the sampled signal itself is
   noisy.** Re-running the pilot under two prompt paraphrases leaves every
   headline quantity essentially unchanged (determinism 80–87%; mean JSD
@@ -202,24 +296,31 @@ not (figure: `figures/contamination_examples.png`).
 
 ## 6. Implications
 
-For the substitution debate, the two results cut in opposite directions, and
-both matter. The stratified curve says the cheap examples are the ones the
-model already labels well — consistent with aggressive automation of the easy
-majority. The failed gate says the obvious triage architecture — "let the
-model flag what it's unsure about" — does not work off the shelf: the model's
-confidence is nearly uniform and nearly total, so it cannot tell you which
-items needed a human. The verbalized result (§4.3) points at the repair:
-a routing signal exists, but it is a *declarative* capability that must be
-elicited explicitly, not read off the model's sampling behavior — pending a
-memorization-controlled replication, the budget-simulation study (router vs.
-random vs. oracle allocation) is the natural next step, run on verbalized
-entropy. Regardless, headline agreement numbers should be reported stratified
-by inter-annotator agreement as a matter of course.
+For the substitution debate, the results assemble into one architecture with
+a warning label. The stratified curve (§4.1) says the cheap examples are the
+ones the model already labels well — consistent with aggressive automation of
+the easy majority. The failed gate (§4.2) says the obvious triage signal —
+"let the model flag what it's unsure about," read off its sampling behavior —
+does not exist. The verbalized result (§4.3) supplies the repair: the signal
+is a *declarative* capability that must be asked for, and the router built on
+it (§4.5) delivers real budget savings (~1.5× annotation efficiency) over
+random allocation in the realistic setting. The warning label is the
+anti-selection result: the same uncertainty signal is worse than useless for
+auditing the model's own best output, because model-reported uncertainty
+locates task difficulty, not model error. Practically: use verbalized
+distributions as the machine annotation, route by uncertainty only to decide
+*which items get humans at all*, and do not expect the model to tell you
+where it is wrong — error-finding needs an independent signal. Regardless,
+headline agreement numbers should be reported stratified by inter-annotator
+agreement as a matter of course.
 
 ## Reproducibility
 
 `scripts/prepare.py` → `scripts/elicit.py submit|status|collect` →
-`scripts/analyze.py`. Elicitation: claude-sonnet-5, Message Batches API,
-10 samples/item, randomized option order, JSON-schema output, thinking
-disabled, seed 20260805 for all randomization and bootstraps. Total API cost:
-≈ $14–21 (31,130 batched requests; 11.25M input / 0.35M output tokens).
+`scripts/analyze.py`; verbalized arm: `scripts/verbalize.py`; router
+simulation: `scripts/router.py` (pure simulation on saved elicitation
+outputs; no further API calls). Elicitation: claude-sonnet-5, Message Batches
+API (verbalized full set ran synchronously), 10 samples/item, randomized
+option order, JSON-schema output, thinking disabled, seed 20260805 for v0–v1
+randomization and bootstraps, seed 20260819 for the router simulation. Total
+API cost: ≈ $20–27 (34,243 requests; ~12.5M input / ~0.4M output tokens).
