@@ -131,8 +131,12 @@ resamples). Contamination diagnostic: agreement of the modal label with the
 | Q5 (highest) | 622 | 0.311 [0.302, 0.321] | 0.558 [0.519, 0.596] |
 
 JSD rises monotonically by a factor of ~4.2 from Q1 to Q5
-(figure: `figures/jsd_vs_entropy_examples.png`). Accuracy against the majority
-declines much more slowly, and its floor is deceptive: on Q5 items the human
+(figure: `figures/jsd_vs_entropy_examples.png`). This deliberately replicates
+the stratified diagnostic Nie et al. (2020) ran on fine-tuned encoders, and
+the shape has changed in a way that matters: where their models' accuracy
+fell to chance on contested items, the frontier LLM stays well above it, and
+its Q1 JSD now reaches their estimated human bound (~0.06). Accuracy against
+the majority declines much more slowly, and its floor is deceptive: on Q5 items the human
 majority is itself close to a coin flip, so "56% accuracy" largely reflects
 picking the more common side of a split — not agreement with what humans
 collectively believe. The gap between the two curves is the headline finding:
@@ -152,7 +156,7 @@ is ρ = 0.164 [95% CI 0.131, 0.196] (p ≈ 4e-20). The correlation is reliably
 nonzero — the model is not blind to difficulty — but the CI excludes by a wide
 margin any threshold (≥ ~0.3) at which uncertainty-based routing would
 meaningfully beat random allocation. An ablation with adaptive thinking
-enabled (§5) leaves the picture unchanged. By the pre-registered logic of the
+enabled (§6) leaves the picture unchanged. By the pre-registered logic of the
 study design, self-consistency entropy is disqualified as a router input:
 **this routing signal does not exist** (§4.5 confirms end-to-end that routing
 on it is no better than random). The signal that does exist comes from a
@@ -188,12 +192,20 @@ are poorly calibrated and self-consistency is the trustworthy signal. It also
 conditionally revives the triage router: the routing signal exists — it just
 has to be asked for, not observed.
 
+The direction of this contrast — verbalized beats sampled, and reasoning does
+not close the gap — independently replicates what Ni et al. (2026) report on
+hate-speech, emotion, and preference tasks and Meister et al. (2025) on
+opinion surveys; §5.3 details what is new here (the entropy-flatness, the
+channel independence, and the routing consequences in §4.5).
+
 One caveat attaches specifically to this result: ChaosNLI's label
-*distributions* have been public since 2020, so the model may have absorbed
-some of them in pretraining. A memorized distribution would inflate verbalized
-performance in a way the gold-label diagnostic in §4.4 does not cover.
-Replication on held-out or post-cutoff annotation data is required before the
-verbalized result is load-bearing.
+*distributions* have been public since 2020 — and are by now an explicit
+optimization target in the literature (e.g., SHALA-LLM fine-tunes directly on
+them) — so the model may have absorbed some of them in pretraining. A
+memorized distribution would inflate verbalized performance in a way the
+gold-label diagnostic in §4.4 does not cover. Replication on held-out or
+post-cutoff annotation data is required before the verbalized result is
+load-bearing.
 
 ### 4.4 The result is not memorization
 
@@ -256,6 +268,126 @@ place of JSD and under the bootstrap split protocol (capture 37.7–38.9%
 verbalized, 44.0–46.8% channel disagreement on the sampled base;
 anti-selection persists on the verbalized base in every variant).
 
+## 5. Related Work
+
+### 5.1 Human label variation and distributional evaluation
+
+That disagreement in NLI judgments is reproducible signal rather than
+annotation noise was established by Pavlick and Kwiatkowski (2019), and the
+position that label variation should be modeled rather than adjudicated away
+is now a program (Plank, 2022; Uma et al., 2021; the perspectivist manifesto,
+Basile et al., 2021, published as Cabitza et al., 2023). Our evaluation
+toolkit is theirs: JSD against the human label distribution and the
+correlation between per-item model and crowd entropy are both standardized in
+Uma et al. (2021). Our dataset paper, ChaosNLI (Nie et al., 2020), already
+performed the stratified analysis for fine-tuned encoders: accuracy degrades
+toward chance and JSD stays above 0.2 as human agreement falls. §4.1 is a
+deliberate replication of that diagnostic on a frontier LLM, and what changed
+is the shape: the model now reaches the estimated human JSD bound (~0.06) on
+high-agreement items, and accuracy on contested items no longer collapses to
+chance (0.56 vs. 0.33) — which makes the flattery problem *worse*, because
+the standard metric now looks respectable everywhere while distributional
+divergence quadruples. Distributed NLI (Zhou et al., 2022) formalized the
+task of predicting human opinion distributions on ChaosNLI: their supervised
+estimators (MC Dropout, recalibration, distillation) reach JSD ≈ 0.18–0.19,
+which our zero-supervision verbalized elicitation beats by ~2.5×; their
+appendix also documents that encoder uncertainty is miscalibrated against
+human disagreement, a precursor of our gate analysis. Baan et al. (2022)
+showed on ChaosNLI that calibration to a majority label is incoherent under
+disagreement (our 50/50 truth/pool split in §3 adapts their device of
+splitting the 100 annotations into sub-populations); Baan et al. (2024) argue
+conceptually that a predictive distribution conflates model confidence with
+human variation — our channel-decorrelation finding (§4.3) turns that
+distinction into a measured property. VariErr NLI (Weber-Genzel et al., 2024)
+implies some of ChaosNLI's variation is annotation error, which makes our
+router's measured gains conservative with respect to error-cleaned targets.
+
+### 5.2 LLMs as annotators
+
+The replacement wave (Gilardi et al., 2023; Törnberg, 2023) reads the model's
+high self-consistency as annotation quality; on contested items we show the
+same property is a liability — the model agrees with itself (α = 0.90) about
+questions on which 100 humans split nearly evenly (α = 0.37). Reiss (2023)
+complained that 2023-era ChatGPT was too *unstable* to annotate reliably;
+2026 frontier models exhibit the opposite pathology, and neither regime
+tracks human disagreement. Baumann et al. (2025) quantify the downstream
+stakes — LLM annotation choices flip roughly a third of tested conclusions —
+and already propose verbalized-confidence-targeted human annotation as a
+mitigation, evaluated against disagreement-filtered gold labels; our
+anti-selection result (§4.5) exposes a failure mode of exactly that strategy
+once the target is the label distribution and the fallback is the model's
+own best output.
+
+### 5.3 LLM uncertainty channels and human disagreement
+
+Lee et al. (2023) first compared sampled and logprob-derived LLM
+distributions to ChaosNLI's annotator distributions, observing that GPT-3's
+output entropy is near zero and visibly uncorrelated with human entropy. Our
+§4.2 quantifies that observation at frontier scale (85% exact determinism;
+α = 0.90 vs. 0.37; gate ρ = 0.164 with CIs) and stress-tests it against
+reasoning and paraphrase confounds. Madaan et al. (2025) stratify accuracy by
+human entropy for open-weight models on ChaosNLI; the accuracy/JSD
+*dissociation* across quintiles is ours. The channel contrast we find was
+anticipated on other tasks: Ni et al. (2026) show verbalized distributions
+beat sampled ones for disagreement prediction on hate-speech, emotion, and
+preference tasks (and that RLVR-style reasoning hurts); Meister et al. (2025)
+found LLMs describe opinion distributions better than they simulate them;
+Jang et al. (2026) attribute the simulation failure to alignment-induced mode
+collapse (cf. Kirk et al., 2024), consistent with the calibration literature
+where asking beats token probabilities (Lin et al., 2022; Tian et al., 2023;
+Kadavath et al., 2022) — though against *correctness*, consistency-based
+signals often win (Xiong et al., 2024), underlining that our target is
+different. Wang et al. (2024) show first-token probabilities diverge from
+what instruction-tuned models actually answer, which is why we omit a
+logprob arm. On NLI specifically, Chen et al. (2024; 2025) approximate human
+judgment distributions with explanation-conditioned LLM prompting, and Chen
+et al. (2026) show CoT does not calibrate distributions on ambiguous items.
+Relative to all of these, our §4.3–4.4 contribute: replication of the
+verbalized–sampled gap on 100-way NLI distributions with a frontier model;
+the near-flatness of verbalized JSD across disagreement levels; the
+statistical *independence* of the two channels' entropies (ρ ≤ 0.08), which
+no prior work reports; and the gate framing that connects channel quality to
+routability. Zhang et al. (2025) propose verbalized sampling to recover
+output diversity; our results externally validate the verbal channel against
+ground-truth human distributions rather than diversity alone.
+
+### 5.4 Hybrid annotation and budget allocation
+
+Routing between model and human annotators instantiates learning-to-defer
+(Madras et al., 2018; Mozannar & Sontag, 2020; DeSalvo et al., 2025), but
+that literature assumes a trained rejector and single-label accuracy; we ask
+which zero-shot LLM signal could support deferral at all, with distributional
+fidelity as the objective. CoAnnotating (Li et al., 2023) routes on
+prompt-paraphrase entropy against single gold labels and reports scalar
+verbalized confidence unreliable — the opposite ordering from ours, which
+dissolves once the elicitation target is distinguished: they elicit scalar
+self-confidence scored against gold labels; we elicit a full annotator
+distribution scored against real human distributions. HyPAC (Zeng et al.,
+2026) gives PAC-guaranteed routing for 0-1 error against objective answers;
+production systems (Kim et al., 2024; Bachar et al., 2026) route escalation
+on uncertainty and find raw signals wanting. Gligorić et al. (2025) allocate
+human budget by verbalized confidence for population-level estimates;
+Mehrotra et al. (2026) do so at demographic-group level; Hakimi et al.
+(2026) find uncertainty-driven selection fails to beat random in active
+learning; Schroeder et al. (2025) show humans anchor when *verifying* LLM
+labels, which motivates our design choice of independent annotation on
+routed items. Closest to our simulation: Klugmann et al. (2024) route items
+between crowd-trained soft-label predictors and humans in vision, and Peale
+et al. (2026) run budget-swept uncertainty-decomposition routing on ChaosNLI
+with trained classifiers. Kohli (2026) shows on ChaosNLI that annotations
+needed per item is metric-dependent (distributional metrics saturate near
+N = 10), consistent with our k-sweep; Gruber et al. (2025) pose the
+annotator-selection question — whether a human or a model provides each
+label — as an open empirical problem. No prior work runs the experiment in
+§4.5: an item-level budget sweep over both coverage and annotation depth
+against real 100-way label distributions, with regret oracles, comparing
+elicitation channels as routing signals *and* as fallbacks. The
+fallback-channel reversal — the same uncertainty signal beats random against
+a weak fallback and anti-selects against a strong one — appears in none of
+the above.
+
+## 6. Limitations
+
 - **Elicitation is not the explanation (ablated).** Because thinking was
   disabled and output schema-constrained in the main run, we replicated the
   200-item pilot with adaptive thinking enabled and a 2,048-token budget.
@@ -294,7 +426,7 @@ anti-selection persists on the verbalized base in every variant).
   noise rather than a stable property of the item, a further reason it cannot
   serve as a routing signal.
 
-## 6. Implications
+## 7. Implications
 
 For the substitution debate, the results assemble into one architecture with
 a warning label. The stratified curve (§4.1) says the cheap examples are the
@@ -313,6 +445,56 @@ distributions as the machine annotation, route by uncertainty only to decide
 where it is wrong — error-finding needs an independent signal. Regardless,
 headline agreement numbers should be reported stratified by inter-annotator
 agreement as a matter of course.
+
+## References
+
+*(Draft list, compiled and URL-verified 2026-08-19; formatting to be normalized at submission. Exact titles/venues for Schroeder et al. and any 2026 arXiv-only entries should be re-checked at camera-ready.)*
+
+- Baan, Joris, Raquel Fernández, Barbara Plank, and Wilker Aziz (2024). Interpreting Predictive Probabilities: Model Confidence or Human Label Variation? EACL 2024 (Volume 2: Short Papers), pp. 268-277. [Verified; it is a position paper at EACL 2024 main conference, matching the description.] https://aclanthology.org/2024.eacl-short.24/
+- Basile, V., Cabitza, F., Campagner, A., & Fell, M. (2021). Toward a Perspectivist Turn in Ground Truthing for Predictive Computing. arXiv:2109.04270. NOTE: the peer-reviewed version is Cabitza, F., Campagner, A., & Basile, V. (2023), AAAI-23, DOI 10.1609/aaai.v37i6.25840 — different author order and year. Citing 'Basile et al. (2021)' is only correct for the arXiv preprint; cite Cabitza et al. (2023) for the published version. https://arxiv.org/abs/2109.04270
+- Basile, V., Fell, M., Fornaciari, T., Hovy, D., Paun, S., Plank, B., Poesio, M., & Uma, A. (2021). We Need to Consider Disagreement in Evaluation. Proceedings of the 1st Workshop on Benchmarking: Past, Present and Future (ACL 2021), pp. 15-21. [Included because 'Basile et al. (2021) perspectivist manifesto' is ambiguous — this is the other paper that citation string commonly resolves to, and the one actually published in an NLP venue in 2021.] https://aclanthology.org/2021.bppf-1.3/
+- Baumann, Röttger, Urman, Wendsjö, Plaza-del-Arco, Gruber & Hovy (2025). Large Language Model Hacking: Quantifying the Hidden Risks of Using LLMs for Text Annotation. arXiv:2509.08825 https://arxiv.org/abs/2509.08825
+- Chaemin Jang, Dongman Lee, and Jihee Kim (2026). Instruction-Tuned Language Models Cannot Sample from Distributions They Can Describe. arXiv preprint arXiv:2607.25292. https://arxiv.org/abs/2607.25292
+- Chen, B., Hu, T., Zhang, C., Litschko, R., Korhonen, A., & Plank, B. (2026). Decoupling the Effect of Chain-of-Thought Reasoning: A Human Label Variation Perspective. Findings of ACL 2026. arXiv:2601.03154. https://arxiv.org/abs/2601.03154
+- Chen, B., Peng, S., Korhonen, A., & Plank, B. (2025). A Rose by Any Other Name: LLM-Generated Explanations Are Good Proxies for Human Explanations to Collect Label Distributions on NLI. Findings of ACL 2025. https://arxiv.org/abs/2412.13942
+- Chen, B., Wang, X., Peng, S., Litschko, R., Korhonen, A., & Plank, B. (2024). "Seeing the Big through the Small": Can LLMs Approximate Human Judgment Distributions on NLI from a Few Explanations? Findings of EMNLP 2024. arXiv:2406.17600 https://arxiv.org/abs/2406.17600
+- DeSalvo, G., Mohri, C., Mohri, M., & Zhong, Y. (2025). Budgeted Multiple-Expert Deferral. arXiv:2510.26706 (preprint, submitted October 2025; no peer-reviewed venue listed). https://arxiv.org/abs/2510.26706
+- Ellie Pavlick and Tom Kwiatkowski (2019). Inherent Disagreements in Human Textual Inferences. Transactions of the Association for Computational Linguistics, vol. 7, pp. 677–694. https://aclanthology.org/Q19-1043/
+- Gilardi, Alizadeh & Kubli (2023). ChatGPT outperforms crowd workers for text-annotation tasks. Proceedings of the National Academy of Sciences 120(30), e2305016120 https://www.pnas.org/doi/10.1073/pnas.2305016120
+- Gligorić, K., Zrnic, T., Lee, C., Candès, E., & Jurafsky, D. (2025). Can Unconfident LLM Annotations Be Used for Confident Conclusions? Proceedings of NAACL 2025 (Volume 1: Long Papers), pages 3514–3533, Albuquerque, New Mexico. ACL. https://aclanthology.org/2025.naacl-long.179/
+- Gruber, Cornelia, Helen Alber, Bernd Bischl, Göran Kauermann, Barbara Plank, and Matthias Aßenmacher (2025). Revisiting Active Learning under (Human) Label Variation. Proceedings of the 4th Workshop on Perspectivist Approaches to NLP (NLPerspectives 2025). NOTE: the task description overstates this paper — it does NOT explicitly call for LLM-assisted annotation-budget-allocation experiments as a combined agenda; it discusses LLM annotators and budgets separately and calls generally for empirical validation. https://aclanthology.org/2025.nlperspectives-1.7/
+- Hakimi, A. D., Hirlimann, L., Augenstein, I., & Schütze, H. (2026). Do We Still Need Humans in the Loop? Comparing Human and LLM Annotation in Active Learning for Hostility Detection. arXiv:2604.13899 https://arxiv.org/abs/2604.13899
+- Hannah Kim, Kushan Mitra, Rafael Li Chen, Sajjadur Rahman, Dan Zhang (2024). MEGAnno+: A Human-LLM Collaborative Annotation System. EACL 2024 System Demonstrations. https://aclanthology.org/2024.eacl-demo.18/
+- Hao Zeng, Huipeng Huang, Xinhao Qu, Jianguo Huang, Bingyi Jing, Hongxin Wei (2026). HyPAC: Cost-Efficient LLMs-Human Hybrid Annotation with PAC Error Guarantees. arXiv:2602.02550 (preprint; listed as under consideration at JASA, not yet a confirmed venue). https://arxiv.org/abs/2602.02550
+- Joris Baan, Wilker Aziz, Barbara Plank, and Raquel Fernández (2022). Stop Measuring Calibration When Humans Disagree. Proceedings of EMNLP 2022, pp. 1892–1915, Abu Dhabi. https://aclanthology.org/2022.emnlp-main.124/
+- Kadavath, S., Conerly, T., Askell, A., Henighan, T., et al. (2022). Language Models (Mostly) Know What They Know. arXiv preprint arXiv:2207.05221 (Anthropic; not peer-reviewed venue) https://arxiv.org/abs/2207.05221
+- Kirk, R., Mediratta, I., Nalmpantis, C., Luketina, J., Hambro, E., Grefenstette, E., & Raileanu, R. (2024). Understanding the Effects of RLHF on LLM Generalisation and Diversity. ICLR 2024. arXiv:2310.06452 https://arxiv.org/abs/2310.06452
+- Klugmann, Christopher, Rafid Mahmood, Guruprasad Hegde, Amit Kale, and Daniel Kondermann (2024). No Need to Sacrifice Data Quality for Quantity: Crowd-Informed Machine Annotation for Cost-Effective Understanding of Visual Data. arXiv preprint arXiv:2409.00048. NOTE: no peer-reviewed venue found; cite as arXiv preprint. https://arxiv.org/abs/2409.00048
+- Kohli, Guneet (2026). Metric-Dependent Annotation Saturation for Learning from Label Distributions. arXiv preprint arXiv:2605.29797. NOTE: single-author paper — cite as Kohli (2026), not 'Kohli et al.'; arXiv preprint, no peer-reviewed venue found. https://arxiv.org/abs/2605.29797
+- Lee, N., An, N. M., & Thorne, J. (2023). Can Large Language Models Capture Dissenting Human Voices? EMNLP 2023. arXiv:2305.13788. https://arxiv.org/abs/2305.13788
+- Lin, S., Hilton, J., & Evans, O. (2022). Teaching Models to Express Their Uncertainty in Words. Transactions on Machine Learning Research (TMLR). arXiv:2205.14334 https://arxiv.org/abs/2205.14334
+- Lovish Madaan, David Esiobu, Pontus Stenetorp, Barbara Plank, and Dieuwke Hupkes (2025). Lost in Inference: Rediscovering the Role of Natural Language Inference for Large Language Models. Proceedings of NAACL 2025 (Volume 1: Long Papers), pages 9229–9242, Albuquerque. ACL. (arXiv:2411.14103, Nov 2024 — the task's 'Madaan et al. 2024' refers to the preprint; the published venue is NAACL 2025.) https://aclanthology.org/2025.naacl-long.466/
+- Madras, D., Pitassi, T., & Zemel, R. (2018). Predict Responsibly: Improving Fairness and Accuracy by Learning to Defer. Advances in Neural Information Processing Systems 31 (NeurIPS 2018). (arXiv:1711.06664; earlier workshop version titled 'Increasing Fairness by Learning to Defer') https://arxiv.org/abs/1711.06664
+- Mehrotra, N., Visokay, A., & Gligorić, K. (2026). Multi-Perspective LLM Annotations for Valid Analyses in Subjective Tasks. arXiv:2603.21404 (Mar 22, 2026) https://arxiv.org/abs/2603.21404
+- Minzhi Li, Taiwei Shi, Caleb Ziems, Min-Yen Kan, Nancy F. Chen, Zhengyuan Liu, Diyi Yang (2023). CoAnnotating: Uncertainty-Guided Work Allocation between Human and Large Language Models for Data Annotation. EMNLP 2023 (main, Singapore). https://aclanthology.org/2023.emnlp-main.92/
+- Mozannar, H., & Sontag, D. (2020). Consistent Estimators for Learning to Defer to an Expert. Proceedings of the 37th International Conference on Machine Learning (ICML 2020), PMLR 119:7076–7087. https://proceedings.mlr.press/v119/mozannar20b.html
+- Ni, Fan, Zouhar, Rooein, Hoyle, Sachan, Leippold, Hovy & Ash (2026). Can Reasoning Help Large Language Models Capture Human Annotator Disagreement? EACL 2026 Main (arXiv:2506.19467; v1 Jun 2025, v3 Jan 2026). Note: exact title differs slightly from the working description — it foregrounds reasoning, not verbalized-vs-sampling. https://arxiv.org/abs/2506.19467
+- Nicole Meister, Carlos Guestrin, and Tatsunori Hashimoto (2025). Benchmarking Distributional Alignment of Large Language Models. Proceedings of NAACL-HLT 2025 (Volume 1: Long Papers), pages 24–49, Albuquerque, New Mexico. Association for Computational Linguistics. (arXiv:2411.05403) https://aclanthology.org/2025.naacl-long.2/
+- Or Bachar, Or Levi, Sardhendu Mishra, Adi Levi, Manpreet Singh Minhas, Justin Miller, Omer Ben-Porat, Eilon Sheetrit, Jonathan Morra (2026). LLM Performance Predictors: Learning When to Escalate in Hybrid Human-AI Moderation Systems. AAMAS 2026 (arXiv:2601.07006; Zefr). https://arxiv.org/abs/2601.07006
+- Peale, C., Devic, S., Gopalan, P., Wieder, U., & Gollakota, A. (2026). Flexible Routing via Uncertainty Decomposition. arXiv:2605.07805 https://arxiv.org/abs/2605.07805
+- Plank, B. (2022). The "Problem" of Human Label Variation: On Ground Truth in Data, Modeling and Evaluation. Proceedings of EMNLP 2022, pp. 10671-10682, Abu Dhabi. https://aclanthology.org/2022.emnlp-main.731/
+- Reiss (2023). Testing the Reliability of ChatGPT for Text Annotation and Classification: A Cautionary Remark. arXiv:2304.11085 (preprint; no journal venue found) https://arxiv.org/abs/2304.11085
+- Schroeder, H., Roy, D., & Kabbara, J. (2025). Human-LLM Interactions Reveal Anchoring Effects in Annotation. Findings of ACL 2025. (anchoring in human review of LLM label suggestions)
+- Tian, K., Mitchell, E., Zhou, A., Sharma, A., Rafailov, R., Yao, H., Finn, C., & Manning, C. D. (2023). Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback. EMNLP 2023 https://aclanthology.org/2023.emnlp-main.330/
+- Törnberg (2023). ChatGPT-4 Outperforms Experts and Crowd Workers in Annotating Political Twitter Messages with Zero-Shot Learning. arXiv:2304.06588 [journal version: Törnberg (2025), Large Language Models Outperform Expert Coders and Supervised Classifiers at Annotating Political Social Media Messages, Social Science Computer Review 43(6), 1181-1195] https://arxiv.org/abs/2304.06588
+- Uma, A. N., Fornaciari, T., Hovy, D., Paun, S., Plank, B., & Poesio, M. (2021). Learning from Disagreement: A Survey. Journal of Artificial Intelligence Research (JAIR), 72, 1385-1470. https://www.jair.org/index.php/jair/article/view/12752
+- Wang, X., Ma, B., Hu, C., Weber-Genzel, L., Röttger, P., Kreuter, F., Hovy, D., & Plank, B. (2024). "My Answer is C": First-Token Probabilities Do Not Match Text Answers in Instruction-Tuned Language Models. Findings of ACL 2024 https://aclanthology.org/2024.findings-acl.441/
+- Weber-Genzel, Leon, Siyao Peng, Marie-Catherine de Marneffe, and Barbara Plank (2024). VariErr NLI: Separating Annotation Error from Human Label Variation. ACL 2024 (Volume 1: Long Papers), Bangkok. [Verified; one detail in our prompt was off: the data is 500 re-annotated MNLI items, not ChaosNLI — MNLI overlaps ChaosNLI's source but VariErr's annotations are their own 2-round procedure.] https://aclanthology.org/2024.acl-long.123/
+- Wu, J., Wang, A., Ong, K., Liang, P. P., & Picard, R. (2026). SHALA-LLM: Smartly Handling Ambiguous Labels in Aligning LLMs. arXiv:2606.05376 (Jun 3, 2026) https://arxiv.org/abs/2606.05376
+- Xiang Zhou, Yixin Nie, Mohit Bansal (2022). Distributed NLI: Learning to Predict Human Opinion Distributions for Language Reasoning. Findings of the Association for Computational Linguistics: ACL 2022. https://aclanthology.org/2022.findings-acl.79/
+- Xiong, M., Hu, Z., Lu, X., Li, Y., Fu, J., He, J., & Hooi, B. (2024). Can LLMs Express Their Uncertainty? An Empirical Evaluation of Confidence Elicitation in LLMs. ICLR 2024. arXiv:2306.13063 https://arxiv.org/abs/2306.13063
+- Yixin Nie, Xiang Zhou, Mohit Bansal (2020). What Can We Learn from Collective Human Opinions on Natural Language Inference Data? Proceedings of EMNLP 2020, pages 9131-9143. https://aclanthology.org/2020.emnlp-main.734/
+- Zhang, J., Yu, S., Chong, D., Sicilia, A., Tomz, M. R., Manning, C. D., & Shi, W. (2025). Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity. arXiv preprint arXiv:2510.01171 https://arxiv.org/abs/2510.01171
 
 ## Reproducibility
 
