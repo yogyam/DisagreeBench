@@ -23,3 +23,6 @@ paper/*.xdv
 # outreach material (contains personal emails - never push)
 outreach/
 V3_PLAN.md
+
+# local claude config/skills
+.claude/
