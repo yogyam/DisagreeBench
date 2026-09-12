@@ -268,6 +268,31 @@ place of JSD and under the bootstrap split protocol (capture 37.7–38.9%
 verbalized, 44.0–46.8% channel disagreement on the sampled base;
 anti-selection persists on the verbalized base in every variant).
 
+### 4.6 Does it generalize beyond NLI? (added 2026-09-12)
+
+Replication on DICES-350 (conversational safety, 104 raters/item, CC BY) and
+LeWiDi-2025 Paraphrase (500 items, labels released May 2025 — post-cutoff,
+memorization excluded by construction; 4-annotator panel so gate-scope only):
+
+| | ChaosNLI | DICES | Par |
+|---|---|---|---|
+| Determinism (sampled) | 0.85 | 0.94 | 0.90 |
+| JSD sampled | 0.224 | 0.225 | 0.224 |
+| JSD verbalized | **0.072** | **0.090** | **0.154** |
+| Gate ρ (verbalized) | 0.393 | 0.289 | 0.039† |
+| Split-half ceiling | 0.843 | 0.750 | −0.002 |
+
+† Unmeasurable, not failed: a 4-annotator panel's split-half entropy
+correlation is zero — no signal could register. Gates must be judged
+relative to the panel's noise ceiling (new methodological point).
+
+Router on DICES: verbalized routing captures 28.7% of oracle vs sampled
+fallback (random needs 1.25–1.30× budget); **anti-selection replicates**
+vs verbalized fallback (−11.0%, gap CIs exclude zero). Honest amendments:
+the verbalized gate weakens off-NLI (47% → 39% of ceiling; DICES CI
+straddles 0.3), and channel *independence* is ChaosNLI-specific (ρ≈0.35–0.42
+elsewhere) — the quality gap is universal, the decorrelation is not.
+
 ## 5. Related Work
 
 ### 5.1 Human label variation and distributional evaluation

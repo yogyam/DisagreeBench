@@ -19,3 +19,7 @@ paper/*.log
 paper/*.blg
 paper/*.out
 paper/*.xdv
+
+# outreach material (contains personal emails - never push)
+outreach/
+V3_PLAN.md
