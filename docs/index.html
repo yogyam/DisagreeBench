@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DisagreeBench</title>
+<meta name="description" content="Model-reported uncertainty finds hard items, not model errors: LLM annotators under human disagreement and the economics of routing.">
+<meta property="og:title" content="Model-Reported Uncertainty Finds Hard Items, Not Model Errors">
+<meta property="og:description" content="LLM sampling uncertainty carries no signal about human disagreement — but asking the model to estimate the annotator distribution does. A budget-routing simulation shows when that signal saves 1.5× annotation budget, and when it is worse than random.">
+<meta property="og:image" content="https://yogyam.github.io/DisagreeBench/figures/jsd_vs_entropy_examples.png">
+<style>
+  :root {
+    --ink: #0b0b0b; --ink2: #52514e; --surface: #fcfcfb; --card: #ffffff;
+    --blue: #2a78d6; --orange: #eb6834; --rule: #e5e4e0;
+  }
+  :root:not([data-theme="light"]) { color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f0efec; --ink2: #b0afaa; --surface: #141413; --card: #1d1c1b; --rule: #33322f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font: 17px/1.65 Georgia, 'Times New Roman', serif;
+    padding: 0 20px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding-block: 48px 80px; }
+  h1 { font-size: 1.9em; line-height: 1.25; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .subtitle { font-size: 1.15em; color: var(--ink2); margin: 0 0 18px; }
+  .author { margin: 0 0 20px; color: var(--ink2); }
+  .author b { color: var(--ink); font-weight: 600; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 36px; font-family: system-ui, sans-serif; font-size: 0.85em; }
+  .links a {
+    display: inline-block; padding: 8px 18px; border-radius: 999px;
+    background: var(--ink); color: var(--surface); text-decoration: none; font-weight: 600;
+  }
+  .links a.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  h2 { font-size: 1.25em; margin: 44px 0 12px; }
+  p { margin: 0 0 16px; }
+  .tldr {
+    background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--blue);
+    border-radius: 8px; padding: 18px 22px; margin: 0 0 8px;
+  }
+  .tldr p:last-child { margin-bottom: 0; }
+  figure { margin: 28px 0; }
+  figure img { max-width: 100%; border-radius: 8px; border: 1px solid var(--rule); background: #fcfcfb; }
+  figcaption { font-size: 0.85em; color: var(--ink2); margin-top: 8px; font-family: system-ui, sans-serif; line-height: 1.5; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 620px) { .two { grid-template-columns: 1fr; } }
+  table { border-collapse: collapse; width: 100%; margin: 20px 0; font-family: system-ui, sans-serif; font-size: 0.82em; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .hl { color: var(--blue); font-weight: 700; }
+  .warn { color: var(--orange); font-weight: 700; }
+  pre {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 16px; overflow-x: auto; font-size: 0.78em; line-height: 1.5;
+  }
+  .foot { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--ink2); font-size: 0.85em; font-family: system-ui, sans-serif; }
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Model-Reported Uncertainty Finds Hard Items, Not&nbsp;Model&nbsp;Errors</h1>
+<p class="subtitle">LLM annotators under human disagreement, and the economics of routing</p>
+<p class="author"><b>Yogya Mehrotra</b> · independent undergraduate research · September 2026</p>
+
+<div class="links">
+  <a href="paper.pdf">📄 Paper (PDF)</a>
+  <a class="ghost" href="https://github.com/yogyam/DisagreeBench">Code &amp; Data Pipeline</a>
+</div>
+
+<div class="tldr">
+<p><b>TL;DR.</b> When you ask an LLM the same contested question 10 times, it gives the identical answer 85–94% of the time — even where 100 humans split 50/50. So "route items the model is unsure about to humans" has no signal to route on. But if you <i>ask</i> the model to estimate how 100 annotators would split, its estimate is 3× closer to the real human distribution and does carry routing signal — worth ~1.5× your annotation budget against a weak baseline. The catch: against the model's own best output, routing by its uncertainty is <i>worse than random</i>, because the model's errors hide in items it is confidently wrong about. <b>Model uncertainty tells you where the task is hard — never where the model is wrong.</b></p>
+</div>
+
+<h2>The problem</h2>
+<p>Claims that LLMs can replace human annotators rest on aggregate agreement numbers. On ChaosNLI — 3,113 NLI items with <b>100 human annotations each</b>, so the full disagreement distribution is known — the standard metric turns out to be most flattering exactly where the model is furthest from human judgment: accuracy against the majority label drops only gently (0.94&nbsp;→&nbsp;0.56) while distributional divergence quadruples (JSD 0.07&nbsp;→&nbsp;0.31).</p>
+
+<figure>
+  <img src="figures/jsd_vs_entropy_examples.png" alt="JSD rises steeply across human-entropy quintiles while accuracy declines gently">
+  <figcaption>The two-curve contrast: divergence from the human label distribution (blue) quadruples across disagreement quintiles while accuracy vs. the majority label (orange) barely moves.</figcaption>
+</figure>
+
+<h2>The gate fails — then a weird trick works</h2>
+<p>The obvious triage architecture — let the model flag what it's unsure about — fails at step one: the model is deterministic across 10 samples on 85% of items (Krippendorff's α&nbsp;=&nbsp;0.90 vs. 0.37 for the human pool), and its sampling entropy barely correlates with human disagreement (ρ&nbsp;=&nbsp;0.164). Enabling reasoning doesn't change this.</p>
+
+<figure>
+  <img src="figures/gate_scatter_examples.png" alt="Model self-consistency entropy sits at zero regardless of human entropy">
+  <figcaption>The model sits at zero entropy regardless of how contested the item is.</figcaption>
+</figure>
+
+<p>But prompted to <i>estimate</i> the annotator distribution ("imagine 100 careful annotators — how many pick each label?"), the same model produces distributions 3× closer to the human ones (JSD 0.07), nearly flat across difficulty, whose entropy does track human disagreement (ρ&nbsp;=&nbsp;0.393). The model <b>knows</b> people disagree; it just never <b>acts</b> uncertain.</p>
+
+<h2>The router: when the signal pays, and when it backfires</h2>
+<p>A budget-sweep simulation sends the top-scoring items to <i>k</i> human annotators (drawn from each item's real annotation pool) and keeps the model's distribution for the rest, with regret oracles as the fair upper bound.</p>
+
+<div class="two">
+<figure>
+  <img src="figures/router_sampled_examples.png" alt="Router curves, sampled fallback">
+  <figcaption><span class="hl">It works:</span> against sampled-distribution fallbacks, verbalized-entropy routing captures 37% of oracle gain; random allocation needs ~1.5× the budget to match.</figcaption>
+</figure>
+<figure>
+  <img src="figures/router_verb_examples.png" alt="Router curves, verbalized fallback">
+  <figcaption><span class="warn">It backfires:</span> against the model's own verbalized fallback, the same signal is <i>worse than random</i> — anti-selection.</figcaption>
+</figure>
+</div>
+
+<p>Bonus economics: in distributional terms, <b>one verbalized model call ≈ five human annotations</b>; a single human label is <i>worse</i> than the model's estimate.</p>
+
+<h2>It's not an NLI quirk (and mostly not memorization)</h2>
+<table>
+  <tr><th></th><th class="num">ChaosNLI</th><th class="num">DICES (safety)</th><th class="num">Par (post-cutoff labels)</th></tr>
+  <tr><td>Determinism (sampled)</td><td class="num">0.85</td><td class="num">0.94</td><td class="num">0.90</td></tr>
+  <tr><td>JSD sampled</td><td class="num">0.224</td><td class="num">0.225</td><td class="num">0.224</td></tr>
+  <tr><td>JSD verbalized</td><td class="num"><b>0.072</b></td><td class="num"><b>0.090</b></td><td class="num"><b>0.154</b></td></tr>
+  <tr><td>Gate ρ (verbalized)</td><td class="num">0.393</td><td class="num">0.289</td><td class="num">0.039†</td></tr>
+  <tr><td>Split-half noise ceiling</td><td class="num">0.843</td><td class="num">0.750</td><td class="num">−0.002</td></tr>
+</table>
+<p style="font-size:0.9em; color:var(--ink2)">† Unmeasurable, not failed: a 4-annotator panel's split-half entropy correlation is zero, so no signal could register — routing gates are only measurable against deep annotator panels. Determinism, the channel gap, and the anti-selection reversal all replicate on conversational safety (DICES-350, 104 raters/item); the verbalized advantage holds on LeWiDi-2025 labels released <i>after</i> the model's training.</p>
+
+<h2>What to do with this</h2>
+<p>Use verbalized distributions as the machine annotation. Route by the model's stated uncertainty only to decide <i>which items get humans at all</i>. And never expect the model to tell you where it is wrong — error-finding needs an independent signal. Headline agreement numbers should be reported stratified by inter-annotator agreement, always.</p>
+
+<h2>Citation</h2>
+<pre>@misc{mehrotra2026disagreebench,
+  title  = {Model-Reported Uncertainty Finds Hard Items, Not Model Errors:
+            LLM Annotators Under Human Disagreement and the Economics of Routing},
+  author = {Mehrotra, Yogya},
+  year   = {2026},
+  url    = {https://yogyam.github.io/DisagreeBench/}
+}</pre>
+
+<div class="foot">
+<p>Model: claude-sonnet-5 · ~44k API requests, ≈$33 total · full pipeline, results, and figures in the <a href="https://github.com/yogyam/DisagreeBench">repo</a>. Concurrent work: <a href="https://arxiv.org/abs/2609.06444">Lail (2026)</a> independently finds the null half of the anti-selection result on the same data (posted Sept 6; these results were public from Aug 19). Related: <a href="https://arxiv.org/abs/2506.19467">Ni et al. (EACL 2026)</a> on verbalized vs. sampled disagreement prediction.</p>
+</div>
+
+</div>
+</body>
+</html>
