@@ -378,13 +378,24 @@ with trained classifiers. Kohli (2026) shows on ChaosNLI that annotations
 needed per item is metric-dependent (distributional metrics saturate near
 N = 10), consistent with our k-sweep; Gruber et al. (2025) pose the
 annotator-selection question — whether a human or a model provides each
-label — as an open empirical problem. No prior work runs the experiment in
-§4.5: an item-level budget sweep over both coverage and annotation depth
-against real 100-way label distributions, with regret oracles, comparing
-elicitation channels as routing signals *and* as fallbacks. The
-fallback-channel reversal — the same uncertainty signal beats random against
-a weak fallback and anti-selects against a strong one — appears in none of
-the above.
+label — as an open empirical problem. Recent budget-aware routing systems
+allocate items by feature-based difficulty (QUORUM, Purificato et al. 2026)
+or learned annotator models (Moriyama et al. 2026), and Kulmizev et al.
+(2026) document LLM label variation on NLI — none compare elicitation
+channels as routing signals, sweep annotation depth, or evaluate against
+100-way label distributions.
+
+**Concurrent work.** While this paper was being finalized, Lail (2026,
+arXiv:2609.06444, posted Sept 6 — our results and code were public from
+Aug 19) independently ran an expert-escalation budget simulation on the same
+ChaosNLI items with a per-item annotation half-split and regret-vs-oracle
+accounting, finding that neither verbalized confidence nor verbalized-
+distribution entropy beats random escalation — converging, in null form,
+with our anti-selection result. The studies are complementary: Lail has no
+sampling arm (no channel comparison, no positive routing result), a single
+fallback, and no annotation-depth sweep. What remains unique here is the
+fallback-channel reversal, the two-channel dissociation that explains it,
+and the breadth-vs-depth sweep.
 
 ## 6. Limitations
 
@@ -484,17 +495,17 @@ agreement as a matter of course.
 - Peale, C., Devic, S., Gopalan, P., Wieder, U., & Gollakota, A. (2026). Flexible Routing via Uncertainty Decomposition. arXiv:2605.07805 https://arxiv.org/abs/2605.07805
 - Plank, B. (2022). The "Problem" of Human Label Variation: On Ground Truth in Data, Modeling and Evaluation. Proceedings of EMNLP 2022, pp. 10671-10682, Abu Dhabi. https://aclanthology.org/2022.emnlp-main.731/
 - Reiss (2023). Testing the Reliability of ChatGPT for Text Annotation and Classification: A Cautionary Remark. arXiv:2304.11085 (preprint; no journal venue found) https://arxiv.org/abs/2304.11085
-- Schroeder, H., Roy, D., & Kabbara, J. (2025). Human-LLM Interactions Reveal Anchoring Effects in Annotation. Findings of ACL 2025. (anchoring in human review of LLM label suggestions)
+- Schroeder, H., Roy, D., & Kabbara, J. (2025). Just Put a Human in the Loop? Investigating LLM-Assisted Annotation for Subjective Tasks. Findings of ACL 2025. https://aclanthology.org/2025.findings-acl.1323/
 - Tian, K., Mitchell, E., Zhou, A., Sharma, A., Rafailov, R., Yao, H., Finn, C., & Manning, C. D. (2023). Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback. EMNLP 2023 https://aclanthology.org/2023.emnlp-main.330/
 - Törnberg (2023). ChatGPT-4 Outperforms Experts and Crowd Workers in Annotating Political Twitter Messages with Zero-Shot Learning. arXiv:2304.06588 [journal version: Törnberg (2025), Large Language Models Outperform Expert Coders and Supervised Classifiers at Annotating Political Social Media Messages, Social Science Computer Review 43(6), 1181-1195] https://arxiv.org/abs/2304.06588
 - Uma, A. N., Fornaciari, T., Hovy, D., Paun, S., Plank, B., & Poesio, M. (2021). Learning from Disagreement: A Survey. Journal of Artificial Intelligence Research (JAIR), 72, 1385-1470. https://www.jair.org/index.php/jair/article/view/12752
 - Wang, X., Ma, B., Hu, C., Weber-Genzel, L., Röttger, P., Kreuter, F., Hovy, D., & Plank, B. (2024). "My Answer is C": First-Token Probabilities Do Not Match Text Answers in Instruction-Tuned Language Models. Findings of ACL 2024 https://aclanthology.org/2024.findings-acl.441/
 - Weber-Genzel, Leon, Siyao Peng, Marie-Catherine de Marneffe, and Barbara Plank (2024). VariErr NLI: Separating Annotation Error from Human Label Variation. ACL 2024 (Volume 1: Long Papers), Bangkok. [Verified; one detail in our prompt was off: the data is 500 re-annotated MNLI items, not ChaosNLI — MNLI overlaps ChaosNLI's source but VariErr's annotations are their own 2-round procedure.] https://aclanthology.org/2024.acl-long.123/
-- Wu, J., Wang, A., Ong, K., Liang, P. P., & Picard, R. (2026). SHALA-LLM: Smartly Handling Ambiguous Labels in Aligning LLMs. arXiv:2606.05376 (Jun 3, 2026) https://arxiv.org/abs/2606.05376
+- Wu, Jingyao, Wang, Ashley, Ong, Keane, Liang, P. P., & Picard, R. (2026). SHALA-LLM: Smartly Handling Ambiguous Labels in Aligning LLMs. arXiv:2606.05376 (Jun 3, 2026) https://arxiv.org/abs/2606.05376
 - Xiang Zhou, Yixin Nie, Mohit Bansal (2022). Distributed NLI: Learning to Predict Human Opinion Distributions for Language Reasoning. Findings of the Association for Computational Linguistics: ACL 2022. https://aclanthology.org/2022.findings-acl.79/
 - Xiong, M., Hu, Z., Lu, X., Li, Y., Fu, J., He, J., & Hooi, B. (2024). Can LLMs Express Their Uncertainty? An Empirical Evaluation of Confidence Elicitation in LLMs. ICLR 2024. arXiv:2306.13063 https://arxiv.org/abs/2306.13063
 - Yixin Nie, Xiang Zhou, Mohit Bansal (2020). What Can We Learn from Collective Human Opinions on Natural Language Inference Data? Proceedings of EMNLP 2020, pages 9131-9143. https://aclanthology.org/2020.emnlp-main.734/
-- Zhang, J., Yu, S., Chong, D., Sicilia, A., Tomz, M. R., Manning, C. D., & Shi, W. (2025). Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity. arXiv preprint arXiv:2510.01171 https://arxiv.org/abs/2510.01171
+- Zhang, J., Yu, S., Chong, D., Sicilia, A., Tomz, M. R., Manning, C. D., & Shi, W. (2025). Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity. ICML 2026 (arXiv:2510.01171) https://arxiv.org/abs/2510.01171
 
 ## Reproducibility
 
